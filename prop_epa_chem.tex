@@ -1,0 +1,319 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage[authoryear,sort&compress]{natbib}
+\usepackage{calc}
+\usepackage{float}
+\usepackage{algorithmic}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\usepackage{subfig}
+\usepackage{overpic}
+\usepackage{ragged2e}
+\usepackage{array}
+\usepackage{chemformula}
+%\usepackage{showkeys}
+\usepackage[margin=1in]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hypersetup{colorlinks=true, linkcolor=black,  anchorcolor=black,
+citecolor=black, filecolor=black, menucolor=black, pagecolor=black,
+urlcolor=black}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newbox\qqboxa
+\def\vcent#1{\setbox\qqboxa\hbox{#1}\raise -0.5\ht\qqboxa\hbox{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% todos
+
+\newcommand{\todo}[1]{\vspace{5 mm}\par \noindent
+\marginpar{\textsc{Todo}}
+\framebox{\begin{minipage}[c]{0.95 \textwidth}
+\tt \flushleft #1 \end{minipage}}\vspace{5 mm}\par}
+
+\newcounter{edremcounter}
+\setlength\marginparwidth{18mm}
+\newcommand{\smalltodo}[1]{%
+  \addtocounter{edremcounter}{1}%
+    \mbox{${}^{{\sf\theedremcounter}}$}%
+  \marginpar{\vskip 3mm\footnotesize\flushleft
+      \textsf{\textbf{\mbox{\theedremcounter
+            }}}~{\fontsize{6}{10pt}\textsf{#1}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% captions
+
+\makeatletter
+
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \small
+  \centerline{\parbox[t]{0.85\textwidth}{#1: #2}}\par
+  \vskip\belowcaptionskip}
+
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOIs in the references
+
+\newcommand{\doi}[1]{DOI: \href{http://dx.doi.org/#1}{#1}}
+\newcommand{\srefid}[1]{SRef-ID: \href{http://direct.sref.org/#1}{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{./graphics/}}
+
+\begin{document}
+
+\section{Overview of Science Questions, Objectives, and Tasks}
+%1-1.5 pages to tell the whole story.
+
+\section{Background}
+
+%[3 pages] 
+
+
+\section{Preliminary Work}
+\label{sec:tools}
+
+%[3 pages] What we have done so far:
+%PartMC, WRF-PartMC
+
+\subsection{WRF-PartMC: Particle-resolved modeling on the regional scale}
+
+\paragraph{The particle-resolved aerosol model PartMC-MOSAIC.}
+PartMC-MOSAIC is a stochastic, particle-resolved aerosol model
+\citep{Riemer2009a,Zaveri2008}, which most recently has been coupled
+with WRF to yield the first 3D particle-resolved model on the regional
+scale (WRF-PartMC, \citep{Curtis2017,Curtis2019}).
+%While the
+%box model version is a convenient tool for exploring sensitivities on
+%the process-level, it is limited by not resolving the spatial
+%structure of the atmosphere. For this project we will therefore make
+%use of the box model (0-D) capability as well as of WRF-PartMC on the
+%regional scale.
+The PartMC model provides the framework for our particle-resolved
+aerosol representation and resolves the composition of many individual
+particles within a well-mixed air parcel. Over the course of the
+simulation, the mass of each constituent species within each particle
+is tracked. Emission, nucleation and Brownian coagulation are
+simulated with a stochastic Monte Carlo approach. While we predict the
+chemical composition of individual particles, we currently do not have
+the capability to predict {\color{red}{particle morphology}}, which is the
+  focus of the proposed work.
+
+PartMC is coupled with the state-of-the-art aerosol chemistry model
+MOSAIC (Model for Simulating Aerosol Interactions and Chemistry,
+\citep{Zaveri2008}) which includes the following components: the gas
+phase photochemical mechanism CBM-Z \citep{Zaveri1999}, the
+Multicomponent Taylor Expansion Method (MTEM) for estimating activity
+coefficients of electrolytes and ions in aqueous solutions
+\citep{Zaveri2005a}, the multi-component equilibrium solver for
+aerosols (MESA) for intraparticle solid–liquid partitioning
+\citep{Zaveri2005b}, the adaptive step time-split Euler method (ASTEM)
+for dynamic gas-particle partitioning \citep{Zaveri2008}, a fully
+dynamic gas-particle mass transfer treatment for SOA (as opposed to
+bulk equilibrium) based on the SORGAM scheme \citep{Schell2001}. The
+CBM-Z gas phase mechanism treats a total of 77 gas species. MOSAIC
+treats key aerosol species including sulfate, nitrate, ammonium,
+chloride, carbonate, methanesulfonic acid, sodium, calcium, ``other
+inorganic mass'' (this represents species such as $\rm SiO_2$, metal
+oxides and other unmeasured or unknown inorganic species present),
+black carbon, primary organic carbon and secondary organic aerosol
+(SOA). SOA includes reaction products of aromatic precursors, higher
+alkenes, $\alpha$-pinene and limonene.
+
+We have used the PartMC-MOSAIC box model extensively for process
+studies of aerosol aging in different environments
+\citep{Fierce2013,Fierce2015,Riemer2010,Tian2014}, and as a
+benchmarking tool to quantify error in more approximate aerosol models
+\citep{ching2016,Kaiser2014,McGraw2008}, frequently using large
+scenario libraries \citep{Fierce2016,Hughes2018}.
+
+\paragraph{Particle-resolved modeling on the regional scale.} WRF-PartMC
+simulates individual aerosol particles within each grid cell of a
+3-dimensional modeling domain (see Figure~\ref{fig:wrf_partmc} for a
+simulation that covers the model domain of California), where we use the WRF
+model to obtain the meteorological fields. The transport between grid cells by
+mean-wind advection and turbulent diffusion is simulated by sampling the
+particle population with appropriate probabilities.
+Figure~\ref{fig:wrf_partmc} illustrates the level of detail that can be
+achieved with WRF-PartMC. For each grid cell in the model domain, we store the
+full aerosol state using approx. 10,000 computational particles, resulting in
+7.5 billion particles in total. This allows us to retrieve the full spatial
+distribution of aerosol mixing state, down to the composition of individual
+particles and their source contributions. From this information, aerosol
+properties such as CCN concentration or optical properties can be calculated,
+building up from the per-particle level. Figure~\ref{fig:wrf_partmc}a shows
+that high number concentrations are present near major highways since traffic
+is a major particle source. While aerosol number concentration is a
+fundamental bulk quantity, common to any chemical transport model, the
+particle-resolved aerosol representation provides unprecedented detail for
+particle composition and source tracking. Figure~\ref{fig:wrf_partmc}b shows
+an example of the complex continuum of aerosol composition that exists within
+the single grid cell marked with a star in Figure~\ref{fig:wrf_partmc}a;
+particles of similar diameters can have very different chemical composition---
+information that is usually lost when using traditional aerosol models.
+WRF-PartMC simulations require a petascale resource with tens of thousands of
+cores, fast interconnections between those cores, and sufficient memory per
+core. We are currently using allocations on Blue Waters [operated by National
+Center for Supercomputing Applications (NCSA) at the University of Illinois
+(UIUC)] for these computationally demanding simulations. As Blue Waters is
+going to be phased out in the near future, we will seek allocations on the
+next-generation systems such as Theta (Argonne National Laboratory) and
+Stampede2 (Texas Advanced Computing Center). See ``Facilities'' for more
+details.
+
+\paragraph{Integrated Abstract Chemical Mechanism}
+Decades of progress in the identification of increasingly complex
+atmospherically relevent mixed-phase physiochemical processes have resulted
+in an advanced understanding of the evolution of atmospheric systems, but
+have also introduced a level of complexity that few atmmospheric models were
+originally designed to handle. In practical terms, this means that most
+regional and global models comprise a collection of chemistry and
+`chemistry-adjacent' software modules (e.g., those for gas-phase chemistry,
+gas--aerosol partitioning, surface chemistry, condensed-phase chemistry,
+partitioning between condensed phases, cloud droplet formation, cloud
+chemistry, emissions, deposition, and photolysis)
+along with `support' modules that calculate parameters needed by these
+modules (e.g., vapor pressures, Henry's law constants, and activity
+coefficients).
+These software modules have, in most cases, been developed independently and
+with a focus on computational efficiency that often leads to significant
+development efforts when modules are coupled for the first time,
+or changes to the underlying mechanisms are applied.
+Although efforts have been made to standardize Earth
+science module integration \citep{jockel2005}, these typically
+retain the stand-alone nature of individual modules.
+In addition, any module that treats processes
+involving aerosols is typically tightly tied to the aerosol representation
+of the host model (bins, modes, etc.). This makes porting comprehensive
+physiochemical mechanisms between models with different aerosol
+representations difficult.
+
+Advances in computing hardware and software design coupled with the
+complexity of multi-phase atmospheric processes make a rethinking of
+the treatment of physiochemical processes in atmospheric models timely.
+We have developed a prototype software package for the treatment of
+physical and chemical processes of gases and aerosols built on the science
+of existing atmospheric models but designed for
+{\bf scalability} of the physiochemical mechanisms, {\bf portability} across
+a wide variety of atmospheric models, and {\bf efficiency} of runtime
+calculations. This is accomplished through a fully object-oriented approach
+to the design of abstract physiochemical systems and mechansims, the use of
+\texttt{json} files for runtime model configuration, and a structure
+designed for the use of JIT compiling and deployment to accelorator
+computing platforms.
+
+\begin{description}
+\item [Object-oriented design.] At the core of the chemistry package is an
+abstract chemical mechanism made up of instances of classes that extend one
+of three abstract base classses: \texttt{Process},
+\texttt{Parameter}, and \texttt{AerosolRepresentation}.
+A list of currently implemented and
+planned extending classes is shown in Table~\ref{tab:model_classes}.
+\texttt{Process} extending classes describe physical and chemical
+transformations (reactions, phase transfer, etc.) and provide functions
+required during solving to advance the model state in time. \texttt{Parameter}
+extending classes provide parameters needed by processes during solving
+(e.g., vapor pressures, Henry's law constants, activity coefficients).
+
+\begin{table}[]
+\caption{Current and planned model classes in the integrated abstract chemical
+         mechanism.}
+\label{tab:model_classes}
+\begin{tabular}{lll}
+ \hline
+ Base class & Description                                      & References \\
+ \hline
+ Process    & Arhennius reaction                               & --- \\
+ Process    & Troe reaction                                    & --- \\
+ Process    & Henry's Law phase transfer                       & --- \\
+ Process    & Vapor-pressure based phase transfer              & SIMPOL.1 \citep{Pankow2008} \\
+ Process    & Photolysis                                       & external \\
+ Process    & Emissions                                        & external \\
+ Process    & Deposition                                       & --- \\
+ Process    & Condensed-phase reversible reaction              & --- \\
+ Process    & Condensed-phase forward reaction                 & --- \\
+ Process    & Surface reaction\textsuperscript{*}              & --- \\
+ Parameter  & PD-FiTE activity coefficients                    & \cite{Topping2009} \\
+ Parameter  & UNIFAC activity coefficients                     & \cite{Hansen1991} \\
+ Parameter  & AIOMFAC activity coefficients\textsuperscript{*} & \cite{Zuend2008} \\
+ AerosolRepresentation & Binned/Modal                          & --- \\
+ AerosolRepresentation & Particle resolved                     & PartMC \citep{Riemer2009a} \\
+ \hline
+ \textsuperscript{*}plannned
+\end{tabular}
+\end{table}
+
+\item [Run-time configuration.]
+
+\item [Condensed memory structure.]
+
+\end{description}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{wrf_partmc_results_new}
+  \caption{(a) Snapshot of the spatial distribution of simulated
+      number concentration for a WRF-PartMC run. (b) For each grid
+      cell, we store the full aerosol state using 5,000 computational
+      particles. Here we show the two-dimensional number distribution
+      as a function of dry diameter and organic aerosol mass fraction
+      for the location indicated with a star in (a). (c) Composition
+      of a particle sampled from the population shown in (b). (d) This
+      particle has coagulated xx times, with the individual components
+      coming from the source sectors as shown in the pie
+      chart. \label{fig:wrf_partmc}}
+\end{figure}
+
+\section{Proposed Research and Tasks}
+\label{sec:prop-rese-tasks}
+%[4 pages]
+
+\subsection{Task 1: Creating the computational framework for benchmark transport and microphysics}
+This is where Matt's figure goes plus the description of how to handle
+the various phases and what he has done for MONARCH. Adding
+per-particle transport could go into here as well. This avoids
+numerical diffusion, making this a very benchmarky benchmark model.
+
+\begin{description}
+\item[Task 1a:] Implement per-particle transport
+\item[Task 1b:]
+\item[Task 1c:]
+\end{description}
+
+\subsection{Task 2: Implementing dynamic treatment of inorganic/organic mixtures}
+This is fiddling with the MOSAIC part.
+\begin{description}
+\item[Task 2a:]
+\item[Task 2b:]
+\end{description}
+
+\subsection{Task 3: Application of WRF-PartMC$^+$ to CARES and SOAS domains}
+Run and do error quantification
+\begin{description}
+\item[Task 3a:]
+\item[Task 3b:]
+\end{description}
+
+%Our vision is captured in Figure~\ref{fig:prl}. This is inspired by the
+%\begin{figure}
+%  \centering
+%  \includegraphics[scale=0.5]{prl}
+%  \caption{adfasdfasdf \label{fig:prl}}
+%\end{figure}
+%This proposal focuses on getting from PRL3 to PRL4 and 5.
+
+
+\section{Timetable of Activities and Project Management}
+[0.5 pages]
+
+\bibliographystyle{plain-local-srefid} \bibliography{refs}
+
+\end{document}
+
+
